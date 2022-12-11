@@ -8,8 +8,8 @@ import { useGetCryptosQuery } from "../services/cryptoApi";
 const {Title} = Typography
 
 const Homepage = () => {
-    const { data, isFetching } = useGetCryptosQuery()
-    console.log(data)
+    const {data, isLoading} = useGetCryptosQuery()
+    const globalStats = data?.data?.stats;
 
     return (
         <>
@@ -18,7 +18,7 @@ const Homepage = () => {
             </Title>
             <Row>
                 <Col span={12}>
-                    <Statistic title="Total Cryptocurrencies" value={5}/>
+                    <Statistic title="Total Cryptocurrencies" value={globalStats.total}/>
                 </Col>
                 <Col span={12}>
                     <Statistic title="Total Exchanges" value={5}/>
