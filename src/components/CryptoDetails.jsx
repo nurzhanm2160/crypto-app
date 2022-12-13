@@ -5,7 +5,8 @@ import millify from 'millify'
 import { Col, Row, Typography, Select } from "antd";
 import { MoneyCollectOutlined, DollarCircleOutlined, FundOutlined, ExclamationCircleOutlined, StopOutlined, TrophyOutlined, CheckOutlined, NumberOutlined, ThunderboltOutlined } from '@ant-design/icons';
 
-import { useGetCryptoDetailsQuery } from '../services/cryptoApi'
+import { useGetCryptoDetailsQuery, useGetCryptoHistoryQuery } from '../services/cryptoApi'
+import LineChart from './LineChart'
 
 const { Text, Title } = Typography
 const { Option } = Select
@@ -14,6 +15,8 @@ const CryptoDetails = () => {
     const { coinId } = useParams()
     const [ timePeriod, setTimePeriod ] = useState('7d')
     const { data, isFetching } = useGetCryptoDetailsQuery(coinId)
+    const { data: coinHistory, isFetching: CryptHistoryIsFetching } = useGetCryptoHistoryQuery({coinId, timePeriod})
+    console.log(coinHistory)
     const cryptoDetails = data?.data?.coin
 
     const time = ['3h', '24h', '7d', '30d', '1y', '3m', '3y', '5y'];
@@ -34,7 +37,7 @@ const CryptoDetails = () => {
         { title: 'Circulating Supply', value: `$ ${millify(cryptoDetails?.circulatingSupply)}`, icon: <ExclamationCircleOutlined /> },
     ];
 
-    if(isFetching) return 'Loading...'
+    if(isFetching || CryptHistoryIsFetching) return 'Loading...'
 
     return (
         <Col className="coin-detail-container">
@@ -55,8 +58,11 @@ const CryptoDetails = () => {
             >
                 {time?.map((date) => <Option key={date}>{date}</Option>)}
             </Select>
-            {/*line chart...*/}
-            <Col classname="stats-container">
+            <LineChart
+                coinHistory={coinHistory}
+                currentPrice={millify(cryptoDetails?.price)}
+                coinName={cryptoDetails?.name} />
+            <Col className="stats-container">
                 <Col className="coin-value-statistics">
                     <Col className="coin-value-statistics-heading">
                         <Title level={3} className="coin-details-heading">
